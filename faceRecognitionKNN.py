@@ -11,7 +11,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 
 # entrena un clasificadro k vecinos mas crecanos para reconocimiento facial
-def train(train_dir, model_save_path=None, n_neighbors=None, km_algo='ball_tre', verbose=False):
+def train(train_dir, model_save_path=None, n_neighbors=None, km_algo='ball_tree', verbose=False):
     # train_dir: directorio que contiene un subdirectorio para cada persona conocida con su nombre
     # model_save_path: directorio para guardar el modelo en el disco
     # n_neighbors: la estructura de datos subyacente para admitir knn.default es ball_tree

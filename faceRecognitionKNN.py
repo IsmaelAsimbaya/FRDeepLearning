@@ -60,7 +60,7 @@ def train(train_dir, model_save_path=None, n_neighbors=None, km_algo='ball_tree'
 
 
 # reconoce una imagen dadda usando un clasificadro KNN entrenado
-def predict(X_img_path, knn_clsf=None, model_path=None, distance_threshold=0.6):
+def predict(X_img_path, knn_clsf=None, model_path=None, distance_threshold=0.54):
     # X_img_path: direccion de la imagen a reconocer
     # knn_clf: un objeto clasificador knn. si no se especifica, se debe especificar model_save_path.
     # model_path: camino a un clasificador knn pre entrnado. si no se especifica, model_save_path debe ser knn_clsf.
@@ -92,7 +92,7 @@ def predict(X_img_path, knn_clsf=None, model_path=None, distance_threshold=0.6):
     faces_encodings = face_recognition.face_encodings(X_img, known_face_locations=X_face_locations)
 
     # usamos el modelo KNN para encontrar las mejores coincidencias para la iamgen de test
-    closest_distances = knn_clsf.kneighbors(faces_encodings, n_neighbors=1)
+    closest_distances = knn_clsf.kneighbors(faces_encodings, n_neighbors=5)
     are_matches = [closest_distances[0][i][0] <= distance_threshold for i in range(len(X_face_locations))]
 
     # predecimos las clases y removemos las clasificaiones que no estan en el humbral
@@ -132,14 +132,14 @@ if __name__ == "__main__":
     # Paso1 : entrenamos el clasificadro y lo guardamos en el disco
     # una vez que este entrenado el modelo se puede omitir este paso.
     print("Entrenando clasificador KNN...")
-    classifier = train("knn_examples/train", model_save_path="trained_knn_model.clf", n_neighbors=2)
+    classifier = train("knn_examples/train", model_save_path="trained_knn_model.clf", n_neighbors=5)
     print("Entrenamiento Completado!")
 
     # Paso 2: utilizamos el clasificador entrenado, para predecir las imagenes desconocidas
     for image_file in os.listdir("knn_examples/test"):
         full_file_path = os.path.join("knn_examples/test", image_file)
 
-        print("Looking for faces in {}".format(image_file))
+        print("Buscando caras en: {}".format(image_file))
 
         # encontramos todas las personas en la imagen utilizando el modelo de clasificacion entrenado
         # Nota: se puede utilizar un archivo pre-entrenado o una instancia al metodo de entrenamiento

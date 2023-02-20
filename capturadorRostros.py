@@ -2,16 +2,15 @@ import cv2
 import os
 import imutils
 
-personName = 'Ismael'
+personName = 'Erick'
 dataPath = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/dataset'
 personPath = dataPath + '/' + personName
 
 if not os.path.exists(personPath):
     print('Directorio creado: ', personPath)
     os.makedirs(personPath)
-
-#cap = cv2.VideoCapture(personName + '.mp4')
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(personName + '.mp4')
+#cap = cv2.VideoCapture(0)
 
 faceClassif = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 count = 0
@@ -26,8 +25,8 @@ while True:
     faces = faceClassif.detectMultiScale(gray, scaleFactor=1.12,
                                          #scaleFactor=1.3,
                                          minNeighbors=5,
-                                         minSize=(50, 50),
-                                         maxSize=(200, 200))
+                                         minSize=(100, 100),
+                                         maxSize=(400, 400))
 
     for (x,y,w,h) in faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)

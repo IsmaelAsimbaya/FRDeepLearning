@@ -93,8 +93,10 @@ def predict(X_img_path, knn_clsf=None, model_path=None, distance_threshold=0.54)
     faces_encodings = face_recognition.face_encodings(X_img, known_face_locations=X_face_locations)
 
     # usamos el modelo KNN para encontrar las mejores coincidencias para la iamgen de test
-    closest_distances = knn_clsf.kneighbors(faces_encodings, n_neighbors=5)
+    closest_distances = knn_clsf.kneighbors(faces_encodings, n_neighbors=1)
+    print(closest_distances)
     are_matches = [closest_distances[0][i][0] <= distance_threshold for i in range(len(X_face_locations))]
+    print(are_matches)
 
     # predecimos las clases y removemos las clasificaiones que no estan en el humbral
     return [(pred, loc) if rec else ("unknown", loc) for pred, loc, rec in
@@ -145,6 +147,7 @@ if __name__ == "__main__":
         # encontramos todas las personas en la imagen utilizando el modelo de clasificacion entrenado
         # Nota: se puede utilizar un archivo pre-entrenado o una instancia al metodo de entrenamiento
         predictions = predict(full_file_path, model_path="trained_knn_model.clf")
+        print(predictions)
 
         # imprimimos los resultados en la consola
         for name, (top, right, bottom, left) in predictions:

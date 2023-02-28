@@ -131,6 +131,28 @@ def show_prediction_labels_on_image(img_path, predictions):
     pil_image.show()
 
 
+def face_train():
+    print("Entrenando clasificador KNN...")
+    train("knn_examples/train", model_save_path="trained_knn_model.clf", n_neighbors=5)
+    print("Entrenamiento Completado!")
+
+
+def face_rec(path, name_predict):
+    for image in os.listdir(path):
+        full_file_path = os.path.join(path, image)
+
+        print("Buscando caras en: {}".format(image))
+
+        predictions = predict(full_file_path, model_path="trained_knn_model.clf")
+        print(predictions)
+
+        for name, (top, right, bottom, left) in predictions:
+            print("- Found {} at ({}, {})".format(name, left, top))
+            if name == name_predict:
+                return True
+    return False
+
+
 if __name__ == "__main__":
     # Paso1 : entrenamos el clasificadro y lo guardamos en el disco
     # una vez que este entrenado el modelo se puede omitir este paso.

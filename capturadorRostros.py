@@ -4,8 +4,8 @@ import imutils
 
 
 def video_capture(personName):
-    dataPath = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/knn_examples/train'
-    videoPath = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/videos'
+    dataPath = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/knn_examples/test'
+    videoPath = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/videos/test'
     personPath = dataPath + '/' + personName
 
     if not os.path.exists(personPath):
@@ -27,8 +27,8 @@ def video_capture(personName):
         faces = faceClassif.detectMultiScale(gray, scaleFactor=1.12,
                                              # scaleFactor=1.3,
                                              minNeighbors=5,
-                                             minSize=(100, 100),
-                                             maxSize=(400, 400))
+                                             minSize=(200, 200),
+                                             maxSize=(450, 450))
 
         for (x, y, w, h) in faces:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -47,4 +47,4 @@ def video_capture(personName):
 
 
 if __name__ == "__main__":
-    video_capture('Roberth')
+    video_capture('3')

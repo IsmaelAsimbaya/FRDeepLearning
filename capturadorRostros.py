@@ -27,7 +27,7 @@ def video_capture(personName):
         faces = faceClassif.detectMultiScale(gray, scaleFactor=1.12,
                                              # scaleFactor=1.3,
                                              minNeighbors=5,
-                                             minSize=(200, 200),
+                                             minSize=(150, 150),
                                              maxSize=(450, 450))
 
         for (x, y, w, h) in faces:
@@ -47,4 +47,4 @@ def video_capture(personName):
 
 
 if __name__ == "__main__":
-    video_capture('7')
+    video_capture('6')

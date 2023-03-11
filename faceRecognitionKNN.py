@@ -143,19 +143,17 @@ def face_train():
     print("Entrenamiento Completado!")
 
 
-def face_rec(path, name_predict):
-    for image in os.listdir(path):
-        full_file_path = os.path.join(path, image)
+def face_rec(image_path, name_predict):
 
-        print("Buscando caras en: {}".format(image))
+    print("Buscando caras en: {}".format(image_path))
 
-        predictions = predict(full_file_path, model_path="trained_knn_model.clf")
-        print(predictions)
+    predictions = predict(image_path, model_path="trained_knn_model.clf")
+    print(predictions)
 
-        for name, (top, right, bottom, left) in predictions:
-            print("- Found {} at ({}, {})".format(name, left, top))
-            if name == name_predict:
-                return True
+    for name, (top, right, bottom, left) in predictions:
+        print("- Found {} at ({}, {})".format(name, left, top))
+        if name == name_predict:
+            return True
     return False
 
 
@@ -185,5 +183,5 @@ if __name__ == "__main__":
         show_prediction_labels_on_image(os.path.join("knn_examples/test", image_file), predictions)
     '''
 
-    validation = face_rec("knn_examples/test", 'Ismael')
+    validation = face_rec("C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/knn_examples/test/7/rostro_12.jpg", '7')
     print(validation)

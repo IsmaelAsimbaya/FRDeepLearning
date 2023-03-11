@@ -129,6 +129,12 @@ def show_prediction_labels_on_image(img_path, predictions):
 
     # Mostramos el resultado de la imagen
     pil_image.show()
+    img_dir = "knn_examples/result"
+    if not os.path.exists(img_dir):
+        os.makedirs(img_dir)
+    img_filename = "imagen_con_predicciones.jpg"
+    img_path = os.path.join(img_dir, img_filename)
+    pil_image.save(img_path)
 
 
 def face_train():
@@ -156,14 +162,14 @@ def face_rec(path, name_predict):
 if __name__ == "__main__":
     # Paso1 : entrenamos el clasificadro y lo guardamos en el disco
     # una vez que este entrenado el modelo se puede omitir este paso.
-    print("Entrenando clasificador KNN...")
-    classifier = train("knn_examples/train", model_save_path="trained_knn_model.clf", n_neighbors=5)
+    '''print("Entrenando clasificador KNN...")
+    #classifier = train("knn_examples/train", model_save_path="trained_knn_model.clf", n_neighbors=5)
     print("Entrenamiento Completado!")
 
     # Paso 2: utilizamos el clasificador entrenado, para predecir las imagenes desconocidas
     for image_file in os.listdir("knn_examples/test"):
         full_file_path = os.path.join("knn_examples/test", image_file)
-
+        print(full_file_path)
         print("Buscando caras en: {}".format(image_file))
 
         # encontramos todas las personas en la imagen utilizando el modelo de clasificacion entrenado
@@ -177,3 +183,6 @@ if __name__ == "__main__":
 
         # desplegamos los resultados de la imagen
         show_prediction_labels_on_image(os.path.join("knn_examples/test", image_file), predictions)
+    '''
+    validation = face_rec("knn_examples/test", 'Ismael')
+    print(validation)

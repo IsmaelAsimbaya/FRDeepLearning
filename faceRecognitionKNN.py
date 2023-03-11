@@ -184,5 +184,6 @@ if __name__ == "__main__":
         # desplegamos los resultados de la imagen
         show_prediction_labels_on_image(os.path.join("knn_examples/test", image_file), predictions)
     '''
+
     validation = face_rec("knn_examples/test", 'Ismael')
     print(validation)

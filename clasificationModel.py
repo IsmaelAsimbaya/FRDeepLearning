@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
     # Guardar el DataFrame como un archivo CSV
     df.to_csv('datos_test.csv', index=False)
-    '''
+
     print('particionando datos ...')
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     print('... datos particionados')
@@ -152,4 +152,4 @@ if __name__ == "__main__":
     print('entrenando KNN ...')
     knn_model = trainKNN(X=x_train, y=y_train, model_save_path="trained_knn_model.clf", n_neighbors=5)
     print('... KNN entrenado')
-    '''
+

@@ -4,8 +4,8 @@ import imutils
 
 
 def video_capture(personName):
-    dataPath = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/knn_examples/train'
-    videoPath = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/videos/train'
+    dataPath = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/knn_examples/test'
+    videoPath = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/videos/test'
     personPath = dataPath + '/' + personName
 
     if not os.path.exists(personPath):
@@ -47,4 +47,4 @@ def video_capture(personName):
 
 
 if __name__ == "__main__":
-    video_capture('3')
+    video_capture('7')

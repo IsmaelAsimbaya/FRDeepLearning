@@ -58,7 +58,7 @@ def test_trainers(training_data, trainer, class1_accuracy, class2_accuracy):
     assert cv.class1_accuracy == pytest.approx(class1_accuracy)
     assert cv.class2_accuracy == pytest.approx(class2_accuracy)
 
-    decision_function = trainer().train(predictors, response)
+    decision_function = trainer().trainKNN(predictors, response)
     assert decision_function(predictors[2]) < 0
     assert decision_function(predictors[3]) > 0
     if 'linear' in trainer.__name__:

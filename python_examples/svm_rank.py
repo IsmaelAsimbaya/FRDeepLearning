@@ -53,7 +53,7 @@ trainer = dlib.svm_rank_trainer()
 trainer.c = 10
 
 # So let's do the training.
-rank = trainer.train(data)
+rank = trainer.trainKNN(data)
 
 # Now if you call rank on a vector it will output a ranking score.  In
 # particular, the ranking score for relevant vectors should be larger than the
@@ -105,7 +105,7 @@ queries.append(data)
 queries.append(data)
 
 # We can train just as before.  
-rank = trainer.train(queries)
+rank = trainer.trainKNN(queries)
 
 # Now that we have multiple ranking_pair instances, we can also use
 # cross_validate_ranking_trainer().  This performs cross-validation by splitting
@@ -141,7 +141,7 @@ samp.append(dlib.pair(1, 1))
 data.nonrelevant.append(samp)
 
 trainer = dlib.svm_rank_trainer_sparse()
-rank = trainer.train(data)
+rank = trainer.trainKNN(data)
 print("Ranking score for a relevant vector:     {}".format(
     rank(data.relevant[0])))
 print("Ranking score for a non-relevant vector: {}".format(

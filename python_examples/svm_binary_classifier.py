@@ -51,7 +51,7 @@ svm.be_verbose()
 svm.set_c(10)
 
 # Now train the model.  The return value is the trained model capable of making predictions.
-classifier = svm.train(x, y)
+classifier = svm.trainKNN(x, y)
 
 # Now run the model on our data and look at the results.
 print("prediction for first sample:  {}".format(classifier(x[0])))

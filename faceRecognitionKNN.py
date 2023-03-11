@@ -162,7 +162,7 @@ def face_rec(path, name_predict):
 if __name__ == "__main__":
     # Paso1 : entrenamos el clasificadro y lo guardamos en el disco
     # una vez que este entrenado el modelo se puede omitir este paso.
-    print("Entrenando clasificador KNN...")
+    '''print("Entrenando clasificador KNN...")
     #classifier = train("knn_examples/train", model_save_path="trained_knn_model.clf", n_neighbors=5)
     print("Entrenamiento Completado!")
 
@@ -186,4 +186,4 @@ if __name__ == "__main__":
     '''
 
     validation = face_rec("knn_examples/test", 'Ismael')
-    print(validation)'''
+    print(validation)

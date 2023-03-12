@@ -1,0 +1,13 @@
+opencv-python~=4.7.0.72
+imutils~=0.5.4
+sklearn~=0.0.post1
+matplotlib
+face_recognition
+pandas~=1.5.3
+numpy~=1.23.5
+
+dlib~=19.24.0
+Flask~=2.2.3
+Pillow~=9.4.0
+scikit-learn~=1.2.2
+dlib

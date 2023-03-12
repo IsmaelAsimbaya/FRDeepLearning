@@ -14,7 +14,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 def redimension(file_path):
     imagen_original = Image.open(file_path)
 
-    nuevo_ancho = 200
+    nuevo_ancho = 500
 
     ancho_original, alto_original = imagen_original.size
     nuevo_alto = int(alto_original * nuevo_ancho / ancho_original)

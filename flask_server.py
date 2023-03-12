@@ -7,7 +7,7 @@ from firebase_admin import credentials, firestore
 import base64
 import os
 from capturadorRostrosB64 import video_capture
-from faceRecognitionKNN import face_rec
+from faceRecognitionKNN import face_rec, redimension
 from PIL import Image
 import io
 
@@ -16,7 +16,6 @@ app = Flask(__name__)
 cred = credentials.Certificate("firebase.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-
 
 
 def print_request(request):
@@ -34,7 +33,6 @@ def print_request(request):
 
 @app.route('/save-user', methods=['POST'])
 def face_recognition():
-
     # obtener los datos del POST
     nombre = request.json['nombre']
     identificacion = request.json['identificacion']
@@ -58,7 +56,7 @@ def face_recognition():
     })
     script_dir = os.path.dirname(os.path.abspath(__file__))
     dataPath = os.path.join(script_dir, 'videos', 'usuarios', identificacion)
-    filename = identificacion    + ".mp4"
+    filename = identificacion + ".mp4"
 
     video_bytes = base64.b64decode(base64_string)
     if not os.path.exists(dataPath):
@@ -68,6 +66,7 @@ def face_recognition():
         video_file.write(video_bytes)
 
     return 'Datos guardados exitosamente'
+
 
 @app.route('/edit-user/<id>', methods=['PUT'])
 def edit_user(id):
@@ -111,6 +110,7 @@ def get_users():
 
     return jsonify(users)
 
+
 @app.route('/aprender/<id>', methods=['GET'])
 def aprender(id):
     docs = db.collection('users').where('identificacion', '==', id).get()
@@ -133,6 +133,8 @@ def aprender(id):
                 'aprendido': True
             })
         return jsonify(user)
+
+
 @app.route('/validar', methods=['POST'])
 def validar():
     # obtener los datos del POST
@@ -143,12 +145,11 @@ def validar():
     with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp:
         image = Image.open(io.BytesIO(video_data))
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        dataPath = os.path.join(script_dir, 'knn_examples', 'val',identificacion, identificacion + '.jpg')
+        dataPath = os.path.join(script_dir, 'knn_examples', 'val', identificacion, identificacion + '.jpg')
         with open(dataPath, 'wb') as f:
             image.save(f)
 
-    return 'true' if face_rec(dataPath, identificacion) else 'false'
-
+    return 'true' if face_rec(redimension(dataPath), identificacion) else 'false'
 
 
 app.run(host='0.0.0.0', port='5001', debug=True)

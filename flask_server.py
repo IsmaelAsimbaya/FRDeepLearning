@@ -7,7 +7,9 @@ from firebase_admin import credentials, firestore
 import base64
 import os
 from capturadorRostrosB64 import video_capture
-# from faceRecognitionKNN import face_rec
+from faceRecognitionKNN import face_rec
+from PIL import Image
+import io
 
 app = Flask(__name__)
 
@@ -138,14 +140,14 @@ def validar():
     identificacion = request.json['identificacion']
     video_data = base64.b64decode(imageB64)
 
-    with tempfile.NamedTemporaryFile(delete=False) as temp:
-        temp.write(video_data)
-        image_file = temp.name
-        print(image_file)
-    with open(image_file, 'rb') as file:
-        encoded_bytes = base64.b64encode(file.read())
-        encoded_string = encoded_bytes.decode('utf-8')
-    return encoded_string
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp:
+        image = Image.open(io.BytesIO(video_data))
+        disk_path = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/knn_examples/val/'
+        image_path = disk_path + identificacion + '/' + 'val_' + identificacion + '.jpg'
+        with open(image_path, 'wb') as f:
+            image.save(f)
+
+    return 'true' if face_rec(image_path, identificacion) else 'false'
 
 
 

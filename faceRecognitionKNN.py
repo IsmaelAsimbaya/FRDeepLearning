@@ -11,6 +11,19 @@ import cv2
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 
+def redimension(file_path):
+    imagen_original = Image.open(file_path)
+
+    nuevo_ancho = 500
+
+    ancho_original, alto_original = imagen_original.size
+    nuevo_alto = int(alto_original * nuevo_ancho / ancho_original)
+
+    imagen_redimensionada = imagen_original.resize((nuevo_ancho, nuevo_alto))
+
+    imagen_redimensionada.save(file_path)
+    return file_path
+
 # entrena un clasificadro k vecinos mas crecanos para reconocimiento facial
 def train(train_dir, model_save_path=None, n_neighbors=None, km_algo='ball_tree', verbose=False):
     # train_dir: directorio que contiene un subdirectorio para cada persona conocida con su nombre
@@ -144,7 +157,6 @@ def face_train():
 
 
 def face_rec(image_path, name_predict):
-
     print("Buscando caras en: {}".format(image_path))
 
     predictions = predict(image_path, model_path="trained_knn_model.clf")
@@ -183,5 +195,6 @@ if __name__ == "__main__":
         show_prediction_labels_on_image(os.path.join("knn_examples/test", image_file), predictions)
     '''
 
-    validation = face_rec("C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/knn_examples/test/7/rostro_12.jpg", '7')
+    validation = face_rec("C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/knn_examples/test/7/rostro_12.jpg",
+                          '7')
     print(validation)

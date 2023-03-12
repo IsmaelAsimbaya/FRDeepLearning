@@ -142,12 +142,12 @@ def validar():
 
     with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp:
         image = Image.open(io.BytesIO(video_data))
-        disk_path = 'C:/HardDisk/Biblioteca/Workspaces/Python/FRDeepLearning/knn_examples/val/'
-        image_path = disk_path + identificacion + '/' + 'val_' + identificacion + '.jpg'
-        with open(image_path, 'wb') as f:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        dataPath = os.path.join(script_dir, 'knn_examples', 'val',identificacion, identificacion + '.jpg')
+        with open(dataPath, 'wb') as f:
             image.save(f)
 
-    return 'true' if face_rec(image_path, identificacion) else 'false'
+    return 'true' if face_rec(dataPath, identificacion) else 'false'
 
 
 

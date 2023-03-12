@@ -131,17 +131,21 @@ def aprender(id):
                 'aprendido': True
             })
         return jsonify(user)
-# @app.route('/validar', methods=['POST'])
-# def validar():
-#     # obtener los datos del POST
-#     imageB64 = request.json['imageB64']
-#     identificacion = request.json['identificacion']
-#     video_data = base64.b64decode(imageB64)
-#
-#     with tempfile.NamedTemporaryFile(delete=False) as temp:
-#         temp.write(video_data)
-#         image_file = temp.name
-#     return face_rec(image_file, identificacion)
+@app.route('/validar', methods=['POST'])
+def validar():
+    # obtener los datos del POST
+    imageB64 = request.json['imageB64']
+    identificacion = request.json['identificacion']
+    video_data = base64.b64decode(imageB64)
+
+    with tempfile.NamedTemporaryFile(delete=False) as temp:
+        temp.write(video_data)
+        image_file = temp.name
+        print(image_file)
+    with open(image_file, 'rb') as file:
+        encoded_bytes = base64.b64encode(file.read())
+        encoded_string = encoded_bytes.decode('utf-8')
+    return encoded_string
 
 
 

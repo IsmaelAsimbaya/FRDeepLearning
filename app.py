@@ -10,6 +10,7 @@ from capturadorRostrosB64 import video_capture
 from faceRecognitionKNN import face_rec, redimension
 from PIL import Image
 import io
+import datetime
 
 app = Flask(__name__)
 
@@ -145,7 +146,10 @@ def validar():
     with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp:
         image = Image.open(io.BytesIO(video_data))
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        dataPath = os.path.join(script_dir, 'knn_examples', 'val', identificacion, identificacion + '.jpg')
+        now = datetime.datetime.now()
+        fecha_hora = now.strftime("%Y%m%d%H%M%S")
+        image_date_name = 'val_' + identificacion + '_' + fecha_hora
+        dataPath = os.path.join(script_dir, 'knn_examples', 'val', identificacion, image_date_name + '.jpg')
         with open(dataPath, 'wb') as f:
             image.save(f)
 

@@ -141,17 +141,15 @@ def validar():
     # obtener los datos del POST
     imageB64 = request.json['imageB64']
     identificacion = request.json['identificacion']
-    video_data = base64.b64decode(imageB64)
+    image_data = base64.b64decode(imageB64)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    now = datetime.datetime.now()
+    fecha_hora = now.strftime("%Y%m%d%H%M%S")
+    image_date_name = 'val_' + identificacion + '_' + fecha_hora
+    dataPath = os.path.join(script_dir, 'knn_examples', 'val', identificacion, image_date_name + '.jpg')
+    with open(dataPath, 'wb') as archivo:
+        archivo.write(image_data)
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as temp:
-        image = Image.open(io.BytesIO(video_data))
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        now = datetime.datetime.now()
-        fecha_hora = now.strftime("%Y%m%d%H%M%S")
-        image_date_name = 'val_' + identificacion + '_' + fecha_hora
-        dataPath = os.path.join(script_dir, 'knn_examples', 'val', identificacion, image_date_name + '.jpg')
-        with open(dataPath, 'wb') as f:
-            image.save(f)
 
     return 'true' if face_rec(redimension(dataPath), identificacion) else 'false'
 

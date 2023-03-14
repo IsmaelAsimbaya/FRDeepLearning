@@ -10,61 +10,6 @@ import csv
 import numpy as np
 import pandas as pd
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-
-
-def trainKNN(X, y, model_save_path=None, n_neighbors=None, km_algo='ball_tree', verbose=False):
-
-    if n_neighbors is None:
-        n_neighbors = int(round(math.sqrt(len(X))))
-        if verbose:
-            print("Eligiendo n_neighbors automaticamnete:", n_neighbors)
-
-    knn_clsf = neighbors.KNeighborsClassifier(n_neighbors=n_neighbors, algorithm=km_algo, weights='distance')
-    knn_clsf.fit(X, y)
-
-    if model_save_path is not None:
-        print('guardando ...')
-        with open(model_save_path, 'wb') as f:
-            pickle.dump(knn_clsf, f)
-
-    return knn_clsf
-
-
-def predict(X_img_path, knn_clsf=None, model_path=None, distance_threshold=0.54):
-
-    if not os.path.isfile(X_img_path) or os.path.splitext(X_img_path)[1][1:] not in ALLOWED_EXTENSIONS:
-        raise Exception("Direccion de imagen no valida: {}".format(X_img_path))
-
-    if knn_clsf is None and model_path is None:
-        raise Exception("Debe proporcionar el clasificador knn a través de knn_clf o model_path")
-
-    # Cargamos el modelo (si se cargo uno)
-    if knn_clsf is None:
-        with open(model_path, 'rb') as f:
-            knn_clsf = pickle.load(f)
-
-    # cargamos la imagen y encontramos la posicion de las caras
-    X_img = face_recognition.load_image_file(X_img_path)
-    X_face_locations = face_recognition.face_locations(X_img)
-
-    # si no encontramos caras en la imagen, retornamos una lista vacia
-    if len(X_face_locations) == 0:
-        return []
-
-    # encontramos las codificaciones para las caras en la imagen de test
-    faces_encodings = face_recognition.face_encodings(X_img, known_face_locations=X_face_locations)
-
-    # usamos el modelo KNN para encontrar las mejores coincidencias para la iamgen de test
-    closest_distances = knn_clsf.kneighbors(faces_encodings, n_neighbors=1)
-    print(closest_distances)
-    are_matches = [closest_distances[0][i][0] <= distance_threshold for i in range(len(X_face_locations))]
-    print(are_matches)
-
-    # predecimos las clases y removemos las clasificaiones que no estan en el humbral
-    return [(pred, loc) if rec else ("unknown", loc) for pred, loc, rec in
-            zip(knn_clsf.predict(faces_encodings), X_face_locations, are_matches)]
-
 
 if __name__ == "__main__":
     train_dir = "knn_examples/train"
@@ -149,7 +94,4 @@ if __name__ == "__main__":
     print('... datos particionados')
     print("X_Train: {}, Y_Train: {}, X_Test: {}, Y_Test: {}".format(len(x_train), len(y_train), len(x_test), len(y_test)))
 
-    print('entrenando KNN ...')
-    knn_model = trainKNN(X=x_train, y=y_train, model_save_path="trained_knn_model.clf", n_neighbors=5)
-    print('... KNN entrenado')
 

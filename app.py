@@ -7,7 +7,7 @@ from firebase_admin import credentials, firestore
 import base64
 import os
 from capturadorRostrosB64 import video_capture
-from faceRecognitionKNN import face_rec, redimension
+from faceRecognitionKNN import face_rec, redimension, face_train
 from PIL import Image
 import io
 import datetime
@@ -19,19 +19,6 @@ app = Flask(__name__)
 cred = credentials.Certificate("firebase.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-
-
-def print_request(request):
-    # Print request url
-    print(request.url)
-    # print relative headers
-    print('content-type: "%s"' % request.headers.get('content-type'))
-    print('content-length: %s' % request.headers.get('content-length'))
-    # print body content
-    body_bytes = request.get_data()
-    # replace image raw data with string '<image raw data>'
-    body_sub = re.sub(b'(\r\n\r\n)(.*?)(\r\n--)', br'\1<image raw data>\3', body_bytes, flags=re.DOTALL)
-    print(body_sub.decode('utf-8'))
 
 
 @app.route('/save-user', methods=['POST'])
@@ -58,7 +45,7 @@ def face_recognition():
         'salida': salida
     })
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    dataPath = os.path.join(script_dir, 'videos', 'usuarios', identificacion)
+    dataPath = os.path.join(script_dir, 'videos', 'train', identificacion)
     filename = identificacion + ".mp4"
 
     video_bytes = base64.b64decode(base64_string)
@@ -124,13 +111,14 @@ def aprender(id):
         user['id'] = docs[0].id
         identificacion = user['identificacion']
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        dataPath = os.path.join(script_dir, 'videos', 'usuarios', identificacion)
+        dataPath = os.path.join(script_dir, 'videos', 'train', identificacion)
         filename = identificacion + ".mp4"
         with open(dataPath + '/' + filename, 'rb') as archivo:
             # Leer el contenido del archivo y convertirlo a base64
             contenido_base64 = base64.b64encode(archivo.read())
         cadena_base64 = contenido_base64.decode('utf-8')
         saved = video_capture(user['identificacion'], cadena_base64)
+        # face_train()
         if saved:
             db.collection('users').document(user['id']).update({
                 'aprendido': True

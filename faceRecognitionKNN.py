@@ -6,6 +6,7 @@ import pickle
 import face_recognition
 from face_recognition.face_recognition_cli import image_files_in_folder
 from PIL import Image, ImageDraw
+from test import test
 import cv2
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -23,6 +24,7 @@ def redimension(file_path):
 
     imagen_redimensionada.save(file_path)
     return file_path
+
 
 # entrena un clasificadro k vecinos mas crecanos para reconocimiento facial
 def train(train_dir, model_save_path=None, n_neighbors=None, km_algo='ball_tree', verbose=False):
@@ -88,6 +90,16 @@ def predict(X_img_path, knn_clsf=None, model_path=None, distance_threshold=0.47)
 
     if knn_clsf is None and model_path is None:
         raise Exception("Debe proporcionar el clasificador knn a través de knn_clf o model_path")
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    spoof = test(cv2.imread(X_img_path),
+                 model_dir=os.path.join(script_dir, 'Silent-Face-Anti-Spoofing-master', 'resources',
+                                        'anti_spoof_models'),
+                 device_id=0)
+    print(spoof)
+    if spoof != 1:
+        raise Exception("Intento de suplantacion de identidad")
 
     # Cargamos el modelo (si se cargo uno)
     if knn_clsf is None:

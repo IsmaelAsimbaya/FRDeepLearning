@@ -196,14 +196,19 @@ def firmar():
         }
     }
     datos = json.dumps(datos)
-    token = os.getenv('token',
-                      '123123')
+    token = os.getenv('token')
+    if token is None:
+        return "false"
     headers = {'Authorization': token,
                'Content-Type': 'application/json'}
     response = requests.post("https://api-firmado.pdfecuador.com/api/signatures/sign", data=datos, headers=headers)
+    print(response.content)
+    if response.status_code != 200:
+        return "false"
     newbase64 = response.json()['b64']
     newbase64 = newbase64.encode('utf-8')
     newbase64 = base64.b64decode(newbase64)
+
     dataPath = os.path.join(script_dir, 'ContratoFirmado.pdf')
     with open(dataPath, 'wb') as archivo:
         archivo.write(newbase64)

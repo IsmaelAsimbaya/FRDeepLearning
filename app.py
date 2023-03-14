@@ -11,6 +11,8 @@ from faceRecognitionKNN import face_rec, redimension
 from PIL import Image
 import io
 import datetime
+from flask import send_file
+import requests
 
 app = Flask(__name__)
 
@@ -80,8 +82,8 @@ def edit_user(id):
     entrada = request.json['entrada']
     salida = request.json['salida']
 
-    entrada_obj = datetime.strptime(entrada, '%Y-%m-%dT%H:%M:%S.%fZ')
-    salida_obj = datetime.strptime(salida, '%Y-%m-%dT%H:%M:%S.%fZ')
+    # entrada_obj = datetime.strptime(entrada, '%Y-%m-%dT%H:%M:%S.%fZ')
+    # salida_obj = datetime.strptime(salida, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     # guardar los datos en Firestore
     doc_ref = db.collection('users').document(id)
@@ -91,8 +93,8 @@ def edit_user(id):
         'correo': correo,
         'telefono': telefono,
         'firma': firma,
-        'entrada': entrada_obj.timestamp(),
-        'salida': salida_obj.timestamp()
+        'entrada': 1633210800,
+        'salida': 1633210800
     })
 
     return 'Datos guardados exitosamente'
@@ -105,8 +107,8 @@ def get_users():
     for doc in docs:
         user = doc.to_dict()
         user['id'] = doc.id
-        user['entrada'] = datetime.fromtimestamp(user['entrada']).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        user['salida'] = datetime.fromtimestamp(user['salida']).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        user['entrada'] = "2023-03-13T10:00:00"
+        user['salida'] = "2023-03-13T10:00:00"
         users.append(user)
 
     return jsonify(users)
@@ -147,11 +149,66 @@ def validar():
     fecha_hora = now.strftime("%Y%m%d%H%M%S")
     image_date_name = 'val_' + identificacion + '_' + fecha_hora
     dataPath = os.path.join(script_dir, 'knn_examples', 'val', identificacion, image_date_name + '.jpg')
+    if not os.path.exists(os.path.join(script_dir, 'knn_examples', 'val', identificacion)):
+        os.makedirs(os.path.join(script_dir, 'knn_examples', 'val', identificacion))
     with open(dataPath, 'wb') as archivo:
         archivo.write(image_data)
 
+    validado = 'true' if face_rec(redimension(dataPath), identificacion) else 'false'
+    if validado == 'true':
+        firmar()
 
-    return 'true' if face_rec(redimension(dataPath), identificacion) else 'false'
+    return validado
+
+
+@app.route('/descargar-contrato')
+def mostrar_pdf():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    dataPath = os.path.join(script_dir, 'ContratoFirmado.pdf')
+    return send_file(dataPath, as_attachment=True)
+
+
+def firmar():
+    valor = os.getenv('contraseña_firma', 'Pin2021**')
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # base 64
+    with open("Contrato.pdf", "rb") as archivo:
+        # Leer los datos del archivo
+        datos = archivo.read()
+        # Codificar los datos en Base64
+        datos_codificados = base64.b64encode(datos)
+    with open("firma.pfx", "rb") as archivo:
+        # Leer los datos del archivo
+        datosfirma = archivo.read()
+        # Codificar los datos en Base64
+        datos_codificados_firma = base64.b64encode(datosfirma)
+
+    datos = {
+        "bufferSignature": datos_codificados_firma.decode('utf-8'),
+        "b64Pdf": datos_codificados.decode('utf-8'),
+        "password": "Pin2021**",
+        "options": {
+            "x": "50",
+            "y": "50",
+            "page": "2",
+            "type": "personal",
+            "reason": "Firma de entrada al trabajo: TEST",
+        }
+    }
+    datos = json.dumps(datos)
+    token = os.getenv('token',
+                      '123123')
+    headers = {'Authorization': token,
+               'Content-Type': 'application/json'}
+    response = requests.post("https://api-firmado.pdfecuador.com/api/signatures/sign", data=datos, headers=headers)
+    newbase64 = response.json()['b64']
+    newbase64 = newbase64.encode('utf-8')
+    newbase64 = base64.b64decode(newbase64)
+    dataPath = os.path.join(script_dir, 'ContratoFirmado.pdf')
+    with open(dataPath, 'wb') as archivo:
+        archivo.write(newbase64)
+
+    return "true"
 
 
 app.run(host='0.0.0.0', port='5001', debug=True)

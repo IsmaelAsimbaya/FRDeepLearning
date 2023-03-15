@@ -118,7 +118,7 @@ def aprender(id):
             contenido_base64 = base64.b64encode(archivo.read())
         cadena_base64 = contenido_base64.decode('utf-8')
         saved = video_capture(user['identificacion'], cadena_base64)
-        # face_train()
+        face_train()
         if saved:
             db.collection('users').document(user['id']).update({
                 'aprendido': True
@@ -142,11 +142,7 @@ def validar():
     with open(dataPath, 'wb') as archivo:
         archivo.write(image_data)
 
-    validado = 'true' if face_rec(redimension(dataPath), identificacion) else 'false'
-    if validado == 'true':
-        firmar()
-
-    return validado
+    return face_rec(redimension(dataPath), identificacion)
 
 
 @app.route('/descargar-contrato')

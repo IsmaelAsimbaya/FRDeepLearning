@@ -99,7 +99,8 @@ def predict(X_img_path, knn_clsf=None, model_path=None, distance_threshold=0.47)
                  device_id=0)
     print(spoof)
     if spoof != 1:
-        raise Exception("Intento de suplantacion de identidad")
+        print("Intento de suplantacion de identidad")
+        return [0]
 
     # Cargamos el modelo (si se cargo uno)
     if knn_clsf is None:
@@ -174,11 +175,17 @@ def face_rec(image_path, name_predict):
     predictions = predict(image_path, model_path="trained_knn_model.clf")
     print(predictions)
 
+    if predictions == [0]:
+        return '2'
+
+    if not predictions:
+        return '3'
+
     for name, (top, right, bottom, left) in predictions:
         print("- Found {} at ({}, {})".format(name, left, top))
         if name == name_predict:
-            return True
-    return False
+            return '1'
+    return '0'
 
 
 if __name__ == "__main__":

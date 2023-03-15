@@ -13,6 +13,8 @@ import io
 import datetime
 from flask import send_file
 import requests
+import moment
+
 
 app = Flask(__name__)
 
@@ -28,22 +30,59 @@ def face_recognition():
     identificacion = request.json['identificacion']
     correo = request.json['correo']
     telefono = request.json['telefono']
-    firma = request.json['firma']
     base64_string = request.json['video']
-    entrada = request.json['entrada']
-    salida = request.json['salida']
+    radio = request.json['radio']
+    longitud = request.json['longitud']
+    latitud = request.json['latitud']
+    modalidad = request.json['modalidad']
+
+    cuerpo = {}
+    if request.json['horarioEspecial'] == False:
+        entrada = request.json['entrada']
+        salida = request.json['salida']
+        entrada_obj = moment.date(entrada)
+        salida_obj = moment.date(salida)
+        cuerpo = {
+            'nombre': nombre,
+            'identificacion': identificacion,
+            'correo': correo,
+            'telefono': telefono,
+            'entrada': entrada_obj.format('YYYY-MM-DD HH:mm:ss'),
+            'salida': salida_obj.format('YYYY-MM-DD HH:mm:ss'),
+            'horarioEspecial': request.json['horarioEspecial'],
+            'radio': radio,
+            'longitud': longitud,
+            'latitud': latitud,
+            'modalidad': modalidad
+         }
+    else:
+        fechas = request.json['fechas']
+        cuerpo = {
+            'nombre': nombre,
+            'identificacion': identificacion,
+            'correo': correo,
+            'telefono': telefono,
+            'horarioEspecial': request.json['horarioEspecial'],
+            'fechas': fechas,
+            'radio': radio,
+            'longitud': longitud,
+            'latitud': latitud,
+        }
+
+
+
+    if request.json['horarioEspecial'] == True:
+        fechas = request.json['fechas']
+        print(fechas)
+
+    if request.json['firmar'] == True:
+        firmar()
+
+
 
     # guardar los datos en Firestore
     doc_ref = db.collection('users').document()
-    doc_ref.set({
-        'nombre': nombre,
-        'identificacion': identificacion,
-        'correo': correo,
-        'telefono': telefono,
-        'firma': firma,
-        'entrada': entrada,
-        'salida': salida
-    })
+    doc_ref.set(cuerpo)
     script_dir = os.path.dirname(os.path.abspath(__file__))
     dataPath = os.path.join(script_dir, 'videos', 'train', identificacion)
     filename = identificacion + ".mp4"
@@ -65,12 +104,10 @@ def edit_user(id):
     identificacion = request.json['identificacion']
     correo = request.json['correo']
     telefono = request.json['telefono']
-    firma = request.json['firma']
-    entrada = request.json['entrada']
-    salida = request.json['salida']
-
-    # entrada_obj = datetime.strptime(entrada, '%Y-%m-%dT%H:%M:%S.%fZ')
-    # salida_obj = datetime.strptime(salida, '%Y-%m-%dT%H:%M:%S.%fZ')
+    firmar = request.json['firmar']
+    radio = request.json['radio']
+    longitud = request.json['longitud']
+    latitud = request.json['latitud']
 
     # guardar los datos en Firestore
     doc_ref = db.collection('users').document(id)
@@ -79,9 +116,10 @@ def edit_user(id):
         'identificacion': identificacion,
         'correo': correo,
         'telefono': telefono,
-        'firma': firma,
-        'entrada': 1633210800,
-        'salida': 1633210800
+        'firmar': firmar,
+        'radio': radio,
+        'longitud': longitud,
+        'latitud': latitud
     })
 
     return 'Datos guardados exitosamente'
@@ -94,8 +132,11 @@ def get_users():
     for doc in docs:
         user = doc.to_dict()
         user['id'] = doc.id
-        user['entrada'] = "2023-03-13T10:00:00"
-        user['salida'] = "2023-03-13T10:00:00"
+        if user['horarioEspecial'] == False:
+            user['entrada'] = moment.date(doc.to_dict()['entrada']).format('YYYY-MM-DDTHH:mm:ss')
+            user['salida'] = moment.date(doc.to_dict()['salida']).format('YYYY-MM-DDTHH:mm:ss')
+        else:
+            user['fechas'] = doc.to_dict()['fechas']
         users.append(user)
 
     return jsonify(users)
@@ -113,6 +154,9 @@ def aprender(id):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         dataPath = os.path.join(script_dir, 'videos', 'train', identificacion)
         filename = identificacion + ".mp4"
+        if not os.path.exists(dataPath):
+            os.makedirs(dataPath)
+
         with open(dataPath + '/' + filename, 'rb') as archivo:
             # Leer el contenido del archivo y convertirlo a base64
             contenido_base64 = base64.b64encode(archivo.read())
@@ -143,8 +187,7 @@ def validar():
         archivo.write(image_data)
 
     validado = 'true' if face_rec(redimension(dataPath), identificacion) else 'false'
-    if validado == 'true':
-        firmar()
+
 
     return validado
 
